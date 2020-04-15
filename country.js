@@ -28,4 +28,6 @@ class Country {
     
 }
 
+Country.countries = ['Ukraine', 'Germany', 'Russia'];
+
 module.exports = Country;

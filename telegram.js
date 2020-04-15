@@ -3,9 +3,6 @@ const Country = require('./country');
 var request = require('request');
 var cheerio = require('cheerio');
 var db = require('./database');
-const commandParts = require('telegraf-command-parts');
-
-
 
 var URL = 'https://www.worldometers.info/coronavirus/';
 var results = [];
@@ -42,17 +39,23 @@ function promised() {
 }
 
 function promisedCountry(countryName) {
-  return new Promise((resolve, reject) => {
-    request(URL, function (err, res, body) {
-      var $ = cheerio.load(res.body);
-      var country = new Country(countryName, ...parseCountry($, countryName));
-    
-      string = country.displaySingleCountryFull;
-      console.log(string);
-      resolve(string);
+  var bool = Country.countries.includes(countryName);
+  console.log("bool " + bool);
+  if (bool) {
+
+    return new Promise((resolve, reject) => {
+      request(URL, function (err, res, body) {
+        var $ = cheerio.load(res.body);
+        var country = new Country(countryName, ...parseCountry($, countryName));
       
+        string = country.displaySingleCountryFull;
+        console.log(string);
+        resolve(string);
+        
+      });
     });
-  });
+  }
+  else string = "Provide valid country name!";
 }
 
 function parseWorld($) {
@@ -84,7 +87,7 @@ function parseCountry($, countryName) {
 
 // TELEGRAM
 
-const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+const bot = new Telegraf(TELEGRAM_TOKEN);
 
 bot.use(async (ctx, next) => {
   const start = new Date()
@@ -136,7 +139,11 @@ bot.use((ctx, next) => {
 });
 
 bot.command('get', async (ctx) => {
-  await promisedCountry(ctx.state.command.args[0]);
+  var english = /^[A-Za-z0-9]*$/;
+  if (english.test(ctx.state.command.args[0]))
+    await promisedCountry(ctx.state.command.args[0]);
+  else 
+    string = 'Provide only english literals!'
   ctx.telegram.sendMessage(ctx.message.chat.id, string, { parse_mode: "HTML" })
   string = '';
 });
