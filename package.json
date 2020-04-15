@@ -1,0 +1,20 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "coronavirus bot",
+  "main": "telegram.js",
+  "scripts": {
+    "test": "nodemon telegram.js",
+    "start": "nodemon telegram.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-admin": "^8.10.0",
+    "nightmare": "^3.0.2",
+    "table": "^5.4.6",
+    "telegraf": "^3.36.0",
+    "telegraf-command-parts": "^1.0.3",
+    "website-to-json": "^1.0.22"
+  }
+}
