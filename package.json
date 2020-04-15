@@ -5,7 +5,7 @@
   "main": "telegram.js",
   "scripts": {
     "test": "nodemon telegram.js",
-    "start": "nodemon telegram.js"
+    "start": "node telegram.js"
   },
   "author": "",
   "license": "ISC",
