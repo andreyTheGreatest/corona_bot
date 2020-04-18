@@ -24,15 +24,16 @@ function promised() {
         russia
       );
        
-      results.forEach(element => {
-        string += element.displayDefault;
+      results.forEach(country => {
+        db.child("country").child(country.getName).once('value', (ss) => {
+          let oldCountry = ss.val();
+          console.log(oldCountry);
+          country.residuals(oldCountry.new_cases, oldCountry.total_deaths, oldCountry.new_deaths, oldCountry.total_recovered, oldCountry.active_cases);
+        })
+        db.child("country").child(country.getName).set(country);
+        string += country.displayDefault;
       });
-      //if (new Date == new Date("April 14, 20 20:55")) {
-        //if (new Date == new Date("April 14, 20 20:55")) {
-          //const some = db.on("value", (snapshot) => console.log(Object.values(snapshot.val()).length));
-          console.log(string);
-          resolve(string);
-          //bot.sendMessage(, string, { parse_mode: "HTML" });
+      resolve(string);
       
     });
   });
@@ -46,10 +47,15 @@ function promisedCountry(countryName) {
     return new Promise((resolve, reject) => {
       request(URL, function (err, res, body) {
         var $ = cheerio.load(res.body);
-        var country = new Country(countryName, ...parseCountry($, countryName));
-      
+        const countryVals = parseCountry($, countryName);
+        let country = new Country(countryName, ...countryVals);
+        db.child("country").child(countryName).once('value', (ss) => {
+          let oldCountry = ss.val();
+          console.log(oldCountry);
+          country.residuals(oldCountry.new_cases, oldCountry.total_deaths, oldCountry.new_deaths, oldCountry.total_recovered, oldCountry.active_cases);
+        })
+        db.child("country").child(countryName).set(country);
         string = country.displaySingleCountryFull;
-        console.log(string);
         resolve(string);
         
       });
@@ -123,15 +129,15 @@ bot.use((ctx, next) => {
 
 bot.use((ctx, next) => {
   let bool = true;
-  db.child(ctx.message.from.username).once('value', function(ss) {
+  db.child("users").child(ctx.message.from.username).once('value', function(ss) {
     var chatID = ss.val();
     console.log(chatID);
     if( chatID !== null ) {
-        bool = false;
+      bool = false;
     }
   })
   if (bool) {
-    db.child(ctx.message.from.username).set({
+    db.child("users").child(ctx.message.from.username).set({
       chat_id: ctx.message.chat.id
     });
   }
@@ -139,26 +145,20 @@ bot.use((ctx, next) => {
 });
 
 bot.command('get', async (ctx) => {
-  var english = /^[A-Za-z0-9]*$/;
+  let english = /^[A-Za-z0-9]*$/;
   if (english.test(ctx.state.command.args[0]))
     await promisedCountry(ctx.state.command.args[0]);
   else 
     string = 'Provide only english literals!'
-  ctx.telegram.sendMessage(ctx.message.chat.id, string, { parse_mode: "HTML" })
+  ctx.telegram.sendMessage(ctx.message.chat.id, string, { parse_mode: "HTML" });
   string = '';
 });
 
 bot.command('getall', async (ctx) => {
   await promised();
-  ctx.telegram.sendMessage(ctx.message.chat.id, string, { parse_mode: "HTML" })
+  ctx.telegram.sendMessage(ctx.message.chat.id, string, { parse_mode: "HTML" });
   string = '';
 });
-
-let today;
-let yesterday;
-// if ((new Date()).getHours() === 20 && (new Date()).getMinutes() == 46) {
-//   bot.sendMessage(parse_mode='HTML', text=string);
-// }
 
 bot.launch();
 
