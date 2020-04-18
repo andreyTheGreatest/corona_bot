@@ -48,7 +48,9 @@ function promisedCountry(countryName) {
       request(URL, function (err, res, body) {
         var $ = cheerio.load(res.body);
         const countryVals = parseCountry($, countryName);
+        console.log(countryVals)
         let country = new Country(countryName, ...countryVals);
+        console.log(country);
         db.child("country").child(countryName).once('value', (ss) => {
           let oldCountry = ss.val();
           console.log(oldCountry);
@@ -67,7 +69,7 @@ function promisedCountry(countryName) {
 function parseWorld($) {
   var worldArray = [];
   $('td', '.total_row_world').each(function (i, e) {
-    worldArray[i] = $(this).text();
+    worldArray[i] = $(this).text() == '' ? '0' : $(this).text();
   });
   worldArray.splice(0, 93);
   worldArray.splice(5, 195);
@@ -84,7 +86,7 @@ function parseCountry($, countryName) {
     .closest('td')
     .nextAll()
     .each(function (i, e) {
-      array[i] = $(this).text();
+      array[i] = $(this).text() == '' ? '0' : $(this).text();
     });
   array.splice(6, array.length);
   array.splice(0, 1);
