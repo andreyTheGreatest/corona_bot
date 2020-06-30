@@ -89,7 +89,7 @@ function parseCountry($, countryName) {
 
 // TELEGRAM
 
-const bot = new Telegraf("1114937560:AAEWwk_x9TLJ_qTiGg9P2dakFNA4Gmgq6_0");
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
 bot.use(async (ctx, next) => {
   const start = new Date()
