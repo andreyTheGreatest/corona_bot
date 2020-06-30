@@ -47,11 +47,6 @@ function promisedCountry(countryName) {
         console.log(countryVals)
         let country = new Country(countryName, ...countryVals);
         console.log(country);
-        db.child("country").child(countryName).once('value', (ss) => {
-          let oldCountry = ss.val();
-          console.log(oldCountry);
-          country.residuals(oldCountry.new_cases, oldCountry.total_deaths, oldCountry.new_deaths, oldCountry.total_recovered, oldCountry.active_cases);
-        })
         db.child("country").child(countryName).set(country);
         string = country.displaySingleCountryFull;
         resolve(string);
@@ -94,7 +89,7 @@ function parseCountry($, countryName) {
 
 // TELEGRAM
 
-const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+const bot = new Telegraf("1114937560:AAEWwk_x9TLJ_qTiGg9P2dakFNA4Gmgq6_0");
 
 bot.use(async (ctx, next) => {
   const start = new Date()
