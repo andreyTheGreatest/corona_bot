@@ -24,12 +24,8 @@ function promised() {
         russia
       );
        
-      results.forEach(country => {
-        db.child("country").child(country.getName).once('value', (ss) => {
-          let oldCountry = ss.val();
-          console.log(oldCountry);
-          country.residuals(oldCountry.new_cases, oldCountry.total_deaths, oldCountry.new_deaths, oldCountry.total_recovered, oldCountry.active_cases);
-        })
+      results.forEach(async country => {
+        console.log(country);
         db.child("country").child(country.getName).set(country);
         string += country.displayDefault;
       });
@@ -71,8 +67,10 @@ function parseWorld($) {
   $('td', '.total_row_world').each(function (i, e) {
     worldArray[i] = $(this).text() == '' ? '0' : $(this).text();
   });
-  worldArray.splice(0, 93);
-  worldArray.splice(5, 195);
+  let index = worldArray.findIndex(x => x === "World") + 2;
+  worldArray = worldArray.slice(index, index + 8);
+  worldArray.splice(4, 1)
+  console.log(worldArray);
   return worldArray;
 }
 
@@ -88,7 +86,8 @@ function parseCountry($, countryName) {
     .each(function (i, e) {
       array[i] = $(this).text() == '' ? '0' : $(this).text();
     });
-  array.splice(6, array.length);
+  console.log(array.splice(5, 1));
+  array.splice(8, array.length);
   array.splice(0, 1);
   return array;
 } 
